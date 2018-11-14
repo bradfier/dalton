@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/xml"
+	"fmt"
+	"github.com/alexrsagen/go-libxml"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -246,6 +248,8 @@ func (s *Client) Call(soapAction string, request, response interface{}) error {
 	if err := encoder.Flush(); err != nil {
 		return err
 	}
+
+	fmt.Println(buffer)
 
 	req, err := http.NewRequest("POST", s.url, buffer)
 	if err != nil {
