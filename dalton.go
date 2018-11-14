@@ -9,6 +9,12 @@ import (
 var _ time.Time
 var _ xml.Name
 
+type AccessToken struct {
+	XMLName xml.Name `xml:"http://thalesgroup.com/RTTI/2010-11-01/ldb/commontypes AccessToken"`
+
+	TokenValue string `xml:"TokenValue"`
+}
+
 type GetBoardRequestParams struct {
 	XMLName xml.Name `xml:"http://thalesgroup.com/RTTI/2017-10-01/ldb/ GetDepartureBoardRequest"`
 
@@ -144,82 +150,38 @@ type ServiceIDType string
 // Defines the length of a train
 type TrainLength uint16
 
-// Represents a time displayed in a departure board. This will often be a true time in the format HH:MM (possibly with appended characters, such as "*"), but may also be a string, such as "No report" or "cancelled"
-type TimeType string
+// A value representing the loading of a train coach as a percentage (0-100%).
+type LoadingValue uint32
 
-// Represents an individual service in a departure board and can be used to return details of that service
-type ServiceIDType string
+// A Coach number/identifier in a train formation. E.g. "A" or "12".
+type CoachNumberType string
+
+// An indication of the class of a coach in a train formation. E.g. "First", "Standard" or "Mixed".
+type CoachClassType string
+
+// An indication of the availability of a toilet in a coach in a train formation. E.g. "Unknown", "None" , "Standard" or "Accessible". Note that other values may be supplied in the future without a schema change.
+type ToiletType string
+
+// The service status of a toilet in coach formation data.
+type ToiletStatus string
+
+const (
+	ToiletStatusUnknown ToiletStatus = "Unknown"
+
+	ToiletStatusInService ToiletStatus = "InService"
+
+	ToiletStatusNotInService ToiletStatus = "NotInService"
+)
+
+type ToiletAvailabilityType struct {
+	Value *ToiletType
+
+	// The service status of this toilet. E.g. "Unknown", "InService" or "NotInService".
+	Status *ToiletStatus `xml:"status,attr,omitempty"`
+}
 
 // A string to show the Adhoc Alert Text for the locaiton.
 type AdhocAlertTextType string
-
-type ServiceLocation struct {
-
-	// The display name of this location.
-	LocationName *LocationNameType `xml:"locationName,omitempty"`
-
-	// The CRS code of this location.
-	Crs *CRSType `xml:"crs,omitempty"`
-
-	// A text string that disambiguates services that may have more than one possible route to the destination. The format will typically be as in this example: "via Manchester Piccadilly & Wilmslow"
-	Via string `xml:"via,omitempty"`
-
-	// A text string contianing service type (Bus/Ferry/Train) to which will be changed in the future "
-	FutureChangeTo string `xml:"futureChangeTo,omitempty"`
-}
-
-type ArrayOfServiceLocations struct {
-	Location []*ServiceLocation `xml:"location,omitempty"`
-}
-
-type ServiceItem struct {
-
-	// A list of origins of this service. Note that a service may have more than one origin.
-	Origin *ArrayOfServiceLocations `xml:"origin,omitempty"`
-
-	// A list of destinations of this service. Note that a service may have more than one destination.
-	Destination *ArrayOfServiceLocations `xml:"destination,omitempty"`
-
-	// A list of the current origins for this service. Note that a service may have more than one current origin.
-	CurrentOrigins *ArrayOfServiceLocations `xml:"currentOrigins,omitempty"`
-
-	// A list of the current destinations for this service. Note that a service may have more than one current destination.
-	CurrentDestinations *ArrayOfServiceLocations `xml:"currentDestinations,omitempty"`
-
-	// The scheduled time of arrival of this service. If no sta is present then this is the origin of this service or it does not set down passengers at this location.
-	Sta *TimeType `xml:"sta,omitempty"`
-
-	// The estimated (or actual) time of arrival. Will only be present if sta is also present.
-	Eta *TimeType `xml:"eta,omitempty"`
-
-	// The scheduled time of departure of this service. If no std is present then this is the destination of this service or it does not pick up passengers at this location.
-	Std *TimeType `xml:"std,omitempty"`
-
-	// The estimated (or actual) time of departure. Will only be present if std is also present.
-	Etd *TimeType `xml:"etd,omitempty"`
-
-	// The platform number (if known and available).
-	Platform *PlatformType `xml:"platform,omitempty"`
-
-	// The Train Operating Company of this service.
-	Operator *TOCName `xml:"operator,omitempty"`
-
-	// The Train Operating Company code of this service.
-	OperatorCode *TOCCode `xml:"operatorCode,omitempty"`
-
-	// A flag to indicate if this service is running as part of a circular route and will call at this location again later in its journey.
-	IsCircularRoute bool `xml:"isCircularRoute,omitempty"`
-
-	// A unique ID for this service at this location that can be used to obtain full details of the service.
-	ServiceID *ServiceIDType `xml:"serviceID,omitempty"`
-
-	// A list of Adhoc Alers related to this locationa for this service.
-	AdhocAlerts *ArrayOfAdhocAlert `xml:"adhocAlerts,omitempty"`
-}
-
-type ArrayOfServiceItems struct {
-	Service []*ServiceItem `xml:"service,omitempty"`
-}
 
 type NRCCMessage struct {
 	Value string
@@ -229,291 +191,12 @@ type ArrayOfNRCCMessages struct {
 	Message []*NRCCMessage `xml:"message,omitempty"`
 }
 
-type CallingPoint struct {
-
-	// The display name of this location.
-	LocationName *LocationNameType `xml:"locationName,omitempty"`
-
-	// The CRS code of this location.
-	Crs *CRSType `xml:"crs,omitempty"`
-
-	// The scheduled time of the service at this location. The time will be either an arrival or departure time, depending on whether it is in the subsequent or previous calling point list.
-	St *TimeType `xml:"st,omitempty"`
-
-	// The estimated time of the service at this location. The time will be either an arrival or departure time, depending on whether it is in the subsequent or previous calling point list. Will only be present if an actual time (at) is not present.
-	Et *TimeType `xml:"et,omitempty"`
-
-	// The actual time of the service at this location. The time will be either an arrival or departure time, depending on whether it is in the subsequent or previous calling point list. Will only be present if an estimated time (et) is not present.
-	At *TimeType `xml:"at,omitempty"`
-
-	// A list of active Adhoc Alert texts  for to this location.
-	AdhocAlerts *ArrayOfAdhocAlert `xml:"adhocAlerts,omitempty"`
-}
-
-type ArrayOfCallingPoints struct {
-	CallingPoint []*CallingPoint `xml:"callingPoint,omitempty"`
-
-	// The type of service (train, bus, ferry) of this list of calling points.
-	ServiceType *ServiceType `xml:"serviceType,attr,omitempty"`
-
-	// A boolean to indicate that passenger required to change the service or not.
-	ServiceChangeRequired bool `xml:"serviceChangeRequired,attr,omitempty"`
-}
-
-type ArrayOfArrayOfCallingPoints struct {
-	CallingPointList []*ArrayOfCallingPoints `xml:"callingPointList,omitempty"`
-}
-
-type StationBoard struct {
-
-	// A timestamp of the time this station departure board was generated.
-	GeneratedAt time.Time `xml:"generatedAt,omitempty"`
-
-	// The display name of the location that this departure board is for.
-	LocationName *LocationNameType `xml:"locationName,omitempty"`
-
-	// The CRS code of the location that this departure board is for.
-	Crs *CRSType `xml:"crs,omitempty"`
-
-	// If a filter was specified in the request, the display name of the location that was specifed as the filter.
-	FilterLocationName *LocationNameType `xml:"filterLocationName,omitempty"`
-
-	// If a filter was specified in the request, the CRS code of the filter location.
-	Filtercrs *CRSType `xml:"filtercrs,omitempty"`
-
-	// If a filter was specified in the request, the type of filter that was requested.
-	FilterType *FilterType `xml:"filterType,omitempty"`
-
-	// A list of messages that apply to this departure board.
-	NrccMessages *ArrayOfNRCCMessages `xml:"nrccMessages,omitempty"`
-
-	// A flag to indicate whether platform information is available for this departure board. If this flag is false then platforms will not be returned in the service lists and a user interface should not display a platform "heading".
-	PlatformAvailable bool `xml:"platformAvailable,omitempty"`
-
-	// If this flag is present with the value of "true" then service data will be unavailable and the service lists will not be returned. This may happen for example if access to a station has been closed to the public at short notice, even though the scheduled services are still running.
-	AreServicesAvailable bool `xml:"areServicesAvailable,omitempty"`
-
-	// A list of train services for this departure board.
-	TrainServices *ArrayOfServiceItems `xml:"trainServices,omitempty"`
-
-	// A list of scheduled or replacement rail bus services for this departure board.
-	BusServices *ArrayOfServiceItems `xml:"busServices,omitempty"`
-
-	// A list of ferry services for this departure board.
-	FerryServices *ArrayOfServiceItems `xml:"ferryServices,omitempty"`
-}
-
 type ArrayOfAdhocAlert struct {
 	AdhocAlertText []*AdhocAlertTextType `xml:"adhocAlertText,omitempty"`
 }
 
-type ServiceDetails struct {
-
-	// A timestamp of the time these service details were generated.
-	GeneratedAt time.Time `xml:"generatedAt,omitempty"`
-
-	// The type of service (train, bus, ferry) that these details represent. Note that real-time information (e.g. eta, etd, ata, atd, isCancelled, etc.) is only available and present for train services.
-	ServiceType *ServiceType `xml:"serviceType,omitempty"`
-
-	// The display name of the departure board location that these service details were accessed from.
-	LocationName *LocationNameType `xml:"locationName,omitempty"`
-
-	// The CRS code of the departure board location that these service details were accessed from.
-	Crs *CRSType `xml:"crs,omitempty"`
-
-	// The display name of the Train Operating Company that operates this service.
-	Operator *TOCName `xml:"operator,omitempty"`
-
-	// The code of the Train Operating Company that operates this service.
-	OperatorCode *TOCCode `xml:"operatorCode,omitempty"`
-
-	// Indicates that the service is cancelled at this location.
-	IsCancelled bool `xml:"isCancelled,omitempty"`
-
-	// A disruption reason for this service. If the service is cancelled, this will be a cancellation reason. If the service is running late at this location, this will be a late-running reason.
-	DisruptionReason string `xml:"disruptionReason,omitempty"`
-
-	// If an expected movement report has been missed, this will contain a message describing the missed movement.
-	OverdueMessage string `xml:"overdueMessage,omitempty"`
-
-	// The platform number that the service is expected to use at this location, if known and available.
-	Platform *PlatformType `xml:"platform,omitempty"`
-
-	// The scheduled time of arrival of this service at this location. If no sta is present then this is the origin of this service or it does not set down passengers at this location.
-	Sta *TimeType `xml:"sta,omitempty"`
-
-	// The estimated time of arrival. Will only be present if sta is also present and ata is not present.
-	Eta *TimeType `xml:"eta,omitempty"`
-
-	// The actual time of arrival. Will only be present if sta is also present and eta is not present.
-	Ata *TimeType `xml:"ata,omitempty"`
-
-	// The scheduled time of departure of this service at this location. If no std is present then this is the destination of this service or it does not pick up passengers at this location.
-	Std *TimeType `xml:"std,omitempty"`
-
-	// The estimated time of departure. Will only be present if std is also present and atd is not present.
-	Etd *TimeType `xml:"etd,omitempty"`
-
-	// The actual time of departure. Will only be present if std is also present and etd is not present.
-	Atd *TimeType `xml:"atd,omitempty"`
-
-	// A list of active Adhoc Alert texts  for to this location.
-	AdhocAlerts *ArrayOfAdhocAlert `xml:"adhocAlerts,omitempty"`
-
-	// A list of lists of the previous calling points in the journey. A separate calling point list will be present for each origin of the service, relative to the current location. Refer to the documentation for how these lists should be handled.
-	PreviousCallingPoints *ArrayOfArrayOfCallingPoints `xml:"previousCallingPoints,omitempty"`
-
-	// A list of lists of the subsequent calling points in the journey. A separate calling point list will be present for each destination of the service, relative to the current location. Refer to the documentation for how these lists should be handled.
-	SubsequentCallingPoints *ArrayOfArrayOfCallingPoints `xml:"subsequentCallingPoints,omitempty"`
-}
-
-type StationBoard struct {
-	*BaseStationBoard
-
-	// A list of train services for this departure board.
-	TrainServices *ArrayOfServiceItems `xml:"trainServices,omitempty"`
-
-	// A list of scheduled or replacement rail bus services for this departure board.
-	BusServices *ArrayOfServiceItems `xml:"busServices,omitempty"`
-
-	// A list of ferry services for this departure board.
-	FerryServices *ArrayOfServiceItems `xml:"ferryServices,omitempty"`
-}
-
-type StationBoardWithDetails struct {
-	*BaseStationBoard
-
-	// A list of train services for this departure board.
-	TrainServices *ArrayOfServiceItemsWithCallingPoints `xml:"trainServices,omitempty"`
-
-	// A list of scheduled or replacement rail bus services for this departure board.
-	BusServices *ArrayOfServiceItemsWithCallingPoints `xml:"busServices,omitempty"`
-
-	// A list of ferry services for this departure board.
-	FerryServices *ArrayOfServiceItemsWithCallingPoints `xml:"ferryServices,omitempty"`
-}
-
-type ServiceDetails struct {
-
-	// A timestamp of the time these service details were generated.
-	GeneratedAt time.Time `xml:"generatedAt,omitempty"`
-
-	// The type of service (train, bus, ferry) that these details represent. Note that real-time information (e.g. eta, etd, ata, atd, isCancelled, etc.) is only available and present for train services.
-	ServiceType *ServiceType `xml:"serviceType,omitempty"`
-
-	// The display name of the departure board location that these service details were accessed from.
-	LocationName *LocationNameType `xml:"locationName,omitempty"`
-
-	// The CRS code of the departure board location that these service details were accessed from.
-	Crs *CRSType `xml:"crs,omitempty"`
-
-	// The display name of the Train Operating Company that operates this service.
-	Operator *TOCName `xml:"operator,omitempty"`
-
-	// The code of the Train Operating Company that operates this service.
-	OperatorCode *TOCCode `xml:"operatorCode,omitempty"`
-
-	// Indicates that the service is cancelled at this location.
-	IsCancelled bool `xml:"isCancelled,omitempty"`
-
-	// A cancellation reason for this service.
-	CancelReason string `xml:"cancelReason,omitempty"`
-
-	// A delay reason for this service.
-	DelayReason string `xml:"delayReason,omitempty"`
-
-	// If an expected movement report has been missed, this will contain a message describing the missed movement.
-	OverdueMessage string `xml:"overdueMessage,omitempty"`
-
-	// The train length (number of units) at this location. If not supplied, or zero, the length is unknown.
-	Length *TrainLength `xml:"length,omitempty"`
-
-	// True if the service detaches units from the front at this location.
-	DetachFront bool `xml:"detachFront,omitempty"`
-
-	// True if the service is operating in the reverse of its normal formation.
-	IsReverseFormation bool `xml:"isReverseFormation,omitempty"`
-
-	// The platform number that the service is expected to use at this location, if known and available.
-	Platform *PlatformType `xml:"platform,omitempty"`
-
-	// The scheduled time of arrival of this service at this location. If no sta is present then this is the origin of this service or it does not set down passengers at this location.
-	Sta *TimeType `xml:"sta,omitempty"`
-
-	// The estimated time of arrival. Will only be present if sta is also present and ata is not present.
-	Eta *TimeType `xml:"eta,omitempty"`
-
-	// The actual time of arrival. Will only be present if sta is also present and eta is not present.
-	Ata *TimeType `xml:"ata,omitempty"`
-
-	// The scheduled time of departure of this service at this location. If no std is present then this is the destination of this service or it does not pick up passengers at this location.
-	Std *TimeType `xml:"std,omitempty"`
-
-	// The estimated time of departure. Will only be present if std is also present and atd is not present.
-	Etd *TimeType `xml:"etd,omitempty"`
-
-	// The actual time of departure. Will only be present if std is also present and etd is not present.
-	Atd *TimeType `xml:"atd,omitempty"`
-
-	// A list of active Adhoc Alert texts  for to this location.
-	AdhocAlerts *ArrayOfAdhocAlert `xml:"adhocAlerts,omitempty"`
-
-	// A list of lists of the previous calling points in the journey. A separate calling point list will be present for each origin of the service, relative to the current location. Refer to the documentation for how these lists should be handled.
-	PreviousCallingPoints *ArrayOfArrayOfCallingPoints `xml:"previousCallingPoints,omitempty"`
-
-	// A list of lists of the subsequent calling points in the journey. A separate calling point list will be present for each destination of the service, relative to the current location. Refer to the documentation for how these lists should be handled.
-	SubsequentCallingPoints *ArrayOfArrayOfCallingPoints `xml:"subsequentCallingPoints,omitempty"`
-}
-
-type DeparturesBoard struct {
-	*BaseStationBoard
-
-	// A list of next/fastest services for this departures board.
-	Departures *ArrayOfDepartureItems `xml:"departures,omitempty"`
-}
-
-type DeparturesBoardWithDetails struct {
-	*BaseStationBoard
-
-	// A list of next/fastest services for this departures board.
-	Departures *ArrayOfDepartureItemsWithCallingPoints `xml:"departures,omitempty"`
-}
-
-type ArrayOfServiceItems struct {
-	Service []*ServiceItem `xml:"service,omitempty"`
-}
-
-type ArrayOfServiceItemsWithCallingPoints struct {
-	Service []*ServiceItemWithCallingPoints `xml:"service,omitempty"`
-}
-
 type ArrayOfServiceLocations struct {
 	Location []*ServiceLocation `xml:"location,omitempty"`
-}
-
-type ArrayOfArrayOfCallingPoints struct {
-	CallingPointList []*ArrayOfCallingPoints `xml:"callingPointList,omitempty"`
-}
-
-type ArrayOfCallingPoints struct {
-	CallingPoint []*CallingPoint `xml:"callingPoint,omitempty"`
-
-	// The type of service (train, bus, ferry) of this list of calling points.
-	ServiceType *ServiceType `xml:"serviceType,attr,omitempty"`
-
-	// A boolean to indicate that passenger required to change the service or not.
-	ServiceChangeRequired bool `xml:"serviceChangeRequired,attr,omitempty"`
-
-	// A boolean to indicate that this route from the origin or to the destination can no longer be reached because the association has been cancelled.
-	AssocIsCancelled bool `xml:"assocIsCancelled,attr,omitempty"`
-}
-
-type ArrayOfDepartureItems struct {
-	Destination []*DepartureItem `xml:"destination,omitempty"`
-}
-
-type ArrayOfDepartureItemsWithCallingPoints struct {
-	Destination []*DepartureItemWithCallingPoints `xml:"destination,omitempty"`
 }
 
 type BaseStationBoard struct {
@@ -603,50 +286,6 @@ type BaseServiceItem struct {
 	AdhocAlerts *ArrayOfAdhocAlert `xml:"adhocAlerts,omitempty"`
 }
 
-type ServiceItem struct {
-	*BaseServiceItem
-
-	// A list of origins of this service. Note that a service may have more than one origin.
-	Origin *ArrayOfServiceLocations `xml:"origin,omitempty"`
-
-	// A list of destinations of this service. Note that a service may have more than one destination.
-	Destination *ArrayOfServiceLocations `xml:"destination,omitempty"`
-
-	// A list of the current origins for this service. Note that a service may have more than one current origin.
-	CurrentOrigins *ArrayOfServiceLocations `xml:"currentOrigins,omitempty"`
-
-	// A list of the current destinations for this service. Note that a service may have more than one current destination.
-	CurrentDestinations *ArrayOfServiceLocations `xml:"currentDestinations,omitempty"`
-}
-
-type ServiceItemWithCallingPoints struct {
-	*ServiceItem
-
-	// A list of lists of the previous calling points in the journey. A separate calling point list will be present for each origin of the service, relative to the current location. Refer to the documentation for how these lists should be handled.
-	PreviousCallingPoints *ArrayOfArrayOfCallingPoints `xml:"previousCallingPoints,omitempty"`
-
-	// A list of lists of the subsequent calling points in the journey. A separate calling point list will be present for each destination of the service, relative to the current location. Refer to the documentation for how these lists should be handled.
-	SubsequentCallingPoints *ArrayOfArrayOfCallingPoints `xml:"subsequentCallingPoints,omitempty"`
-}
-
-type DepartureItem struct {
-
-	// The details of the next/fastest service.
-	Service *ServiceItem `xml:"service,omitempty"`
-
-	// The CRS code from the requested filterList for which this service is the next/fastest departure.
-	Crs *CRSType `xml:"crs,attr,omitempty"`
-}
-
-type DepartureItemWithCallingPoints struct {
-
-	// The details of the next/fastest service.
-	Service *ServiceItemWithCallingPoints `xml:"service,omitempty"`
-
-	// The CRS code from the requested filterList for which this service is the next/fastest departure.
-	Crs *CRSType `xml:"crs,attr,omitempty"`
-}
-
 type ServiceLocation struct {
 
 	// The display name of this origin or destination location.
@@ -663,36 +302,6 @@ type ServiceLocation struct {
 
 	// This origin or destination can no longer be reached because the association has been cancelled.
 	AssocIsCancelled bool `xml:"assocIsCancelled,omitempty"`
-}
-
-type CallingPoint struct {
-
-	// The display name of this location.
-	LocationName *LocationNameType `xml:"locationName,omitempty"`
-
-	// The CRS code of this location.
-	Crs *CRSType `xml:"crs,omitempty"`
-
-	// The scheduled time of the service at this location. The time will be either an arrival or departure time, depending on whether it is in the subsequent or previous calling point list.
-	St *TimeType `xml:"st,omitempty"`
-
-	// The estimated time of the service at this location. The time will be either an arrival or departure time, depending on whether it is in the subsequent or previous calling point list. Will only be present if an actual time (at) is not present.
-	Et *TimeType `xml:"et,omitempty"`
-
-	// The actual time of the service at this location. The time will be either an arrival or departure time, depending on whether it is in the subsequent or previous calling point list. Will only be present if an estimated time (et) is not present.
-	At *TimeType `xml:"at,omitempty"`
-
-	// A flag to indicate that this service is cancelled at this location.
-	IsCancelled bool `xml:"isCancelled,omitempty"`
-
-	// The train length (number of units) at this location. If not supplied, or zero, the length is unknown.
-	Length *TrainLength `xml:"length,omitempty"`
-
-	// True if the service detaches units from the front at this location.
-	DetachFront bool `xml:"detachFront,omitempty"`
-
-	// A list of active Adhoc Alert texts  for to this location.
-	AdhocAlerts *ArrayOfAdhocAlert `xml:"adhocAlerts,omitempty"`
 }
 
 type StationBoard struct {
@@ -959,10 +568,10 @@ type LDBServiceSoap interface {
 }
 
 type lDBServiceSoap struct {
-	client *soap.Client
+	client Client
 }
 
-func NewLDBServiceSoap(client *soap.Client) LDBServiceSoap {
+func NewLDBServiceSoap(client Client) LDBServiceSoap {
 	return &lDBServiceSoap{
 		client: client,
 	}
