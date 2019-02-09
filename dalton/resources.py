@@ -1,6 +1,6 @@
 import re
-import crs
-import soap
+from . import crs
+from . import soap
 
 from flask import jsonify
 from flask_restful import reqparse, abort, Resource

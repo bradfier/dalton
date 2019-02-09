@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Resource, Api
 
-from resources import CRS, Departures, FilteredDepartures, Arrivals, FilteredArrivals
+from .resources import CRS, Departures, FilteredDepartures, Arrivals, FilteredArrivals
 
 app = Flask(__name__)
 api = Api(app)
