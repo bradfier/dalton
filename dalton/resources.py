@@ -4,9 +4,29 @@ from . import soap
 
 from flask import jsonify
 from flask_restful import reqparse, abort, Resource
+from functools import wraps
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', location='headers', required=True)
+
+
+def handle_fault(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        from zeep.exceptions import Fault
+        last_fault = None
+        try:
+            return f(*args, **kwargs)
+        except Fault as fault:
+            last_fault = fault
+
+        # Bad API keys result in weird non-soap error XML
+        if last_fault.detail and '401' in bytes.decode(last_fault.detail):
+            abort(401, message='Invalid authentication token')
+        else:
+            abort(502, message=last_fault.message)
+
+    return wrapper
 
 
 def gen_auth_header(header):
@@ -42,6 +62,10 @@ def parse_direction(direction):
         )
 
 
+class SoapResource(Resource):
+    method_decorators = [handle_fault]
+
+
 class CRS(Resource):
     def get(self):
         codes = [{
@@ -52,7 +76,7 @@ class CRS(Resource):
         return codes
 
 
-class FilteredDepartures(Resource):
+class FilteredDepartures(SoapResource):
     def get(self, station, filter_direction, filter_station, num_rows=10):
         args = parser.parse_args()
         header = gen_auth_header(args['Authorization'])
@@ -66,7 +90,7 @@ class FilteredDepartures(Resource):
                     _soapheaders=[header])))
 
 
-class Departures(Resource):
+class Departures(SoapResource):
     def get(self, station, num_rows=10):
         args = parser.parse_args()
         header = gen_auth_header(args['Authorization'])
@@ -78,7 +102,7 @@ class Departures(Resource):
                     _soapheaders=[header])))
 
 
-class Arrivals(Resource):
+class Arrivals(SoapResource):
     def get(self, station, num_rows=10):
         args = parser.parse_args()
         header = gen_auth_header(args['Authorization'])
@@ -90,7 +114,7 @@ class Arrivals(Resource):
                     _soapheaders=[header])))
 
 
-class FilteredArrivals(Resource):
+class FilteredArrivals(SoapResource):
     def get(self, station, filter_direction, filter_station, num_rows=10):
         args = parser.parse_args()
         header = gen_auth_header(args['Authorization'])
