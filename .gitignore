@@ -115,5 +115,3 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Using poetry so ignore requirements
-requirements.txt
