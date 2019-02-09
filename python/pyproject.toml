@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "dalton"
+version = "0.1.0"
+description = "A REST / JSON Proxy for the Darwin Rail Data API"
+authors = ["Richard Bradfield <bradfier@fstab.me>"]
+license = "AGPL-3.0-only"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+zeep = "^3.2"
+flask = "^1.0"
+flask-restful = "^0.3.7"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
