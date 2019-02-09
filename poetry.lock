@@ -230,7 +230,7 @@ requests-toolbelt = ">=0.7.1"
 six = ">=1.9.0"
 
 [metadata]
-content-hash = "ae62ec6fbf6af2aa7d3f0ef076af9f5c38824e2b5204263d33c1853e827af536"
+content-hash = "9e92e1408ba7eeea7d44e6eb4ec88cad5ff8e9188a201c8260c8a3766309eee1"
 python-versions = "^3.7"
 
 [metadata.hashes]
