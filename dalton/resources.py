@@ -21,10 +21,13 @@ def handle_fault(f):
             last_fault = fault
 
         # Bad API keys result in weird non-soap error XML
-        if last_fault.detail and '401' in bytes.decode(last_fault.detail):
-            abort(401, message='Invalid authentication token')
-        else:
-            abort(502, message=last_fault.message)
+        if last_fault.detail is not None:
+            try:
+                if '401' in bytes.decode(last_fault.detail):
+                    abort(401, message='Invalid authentication token')
+            except TypeError:
+                pass
+        abort(502, message=last_fault.message)
 
     return wrapper
 
@@ -52,6 +55,10 @@ def parse_station(station):
     abort(400, message='Bad CRS code or station name')
 
 
+def parse_station_list(stations):
+    return [parse_station(s) for s in stations.split(',')]
+
+
 def parse_direction(direction):
     if (direction.lower() == 'from' or direction.lower() == 'to'):
         return direction.lower()
@@ -76,6 +83,18 @@ class CRS(Resource):
         return codes
 
 
+class Departures(SoapResource):
+    def get(self, station, num_rows=10):
+        args = parser.parse_args()
+        header = gen_auth_header(args['Authorization'])
+        return jsonify(
+            soap.to_dict(
+                soap.client.service.GetDepartureBoard(
+                    numRows=num_rows,
+                    crs=parse_station(station),
+                    _soapheaders=[header])))
+
+
 class FilteredDepartures(SoapResource):
     def get(self, station, filter_direction, filter_station, num_rows=10):
         args = parser.parse_args()
@@ -90,15 +109,15 @@ class FilteredDepartures(SoapResource):
                     _soapheaders=[header])))
 
 
-class Departures(SoapResource):
-    def get(self, station, num_rows=10):
+class NextDeparture(SoapResource):
+    def get(self, station, station_list):
         args = parser.parse_args()
         header = gen_auth_header(args['Authorization'])
         return jsonify(
             soap.to_dict(
-                soap.client.service.GetDepartureBoard(
-                    numRows=num_rows,
+                soap.client.service.GetNextDepartures(
                     crs=parse_station(station),
+                    filterList=parse_station_list(station_list),
                     _soapheaders=[header])))
 
 
@@ -126,3 +145,25 @@ class FilteredArrivals(SoapResource):
                     filterCrs=parse_station(filter_station),
                     filterType=parse_direction(filter_direction),
                     _soapheaders=[header])))
+
+
+class Fastest(SoapResource):
+    def get(self, station, station_list):
+        args = parser.parse_args()
+        header = gen_auth_header(args['Authorization'])
+        return jsonify(
+            soap.to_dict(
+                soap.client.service.GetFastestDepartures(
+                    crs=parse_station(station),
+                    filterList=parse_station_list(station_list),
+                    _soapheaders=[header])))
+
+
+class ServiceDetails(SoapResource):
+    def get(self, service_id):
+        args = parser.parse_args()
+        header = gen_auth_header(args['Authorization'])
+        return jsonify(
+            soap.to_dict(
+                soap.client.service.GetServiceDetails(
+                    serviceID=service_id, _soapheaders=[header])))
