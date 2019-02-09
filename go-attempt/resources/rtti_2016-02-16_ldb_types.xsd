@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ct2007="http://thalesgroup.com/RTTI/2007-10-10/ldb/commontypes" xmlns:ct2016="http://thalesgroup.com/RTTI/2016-02-16/ldb/commontypes" xmlns:ldbt2015="http://thalesgroup.com/RTTI/2015-11-27/ldb/types" xmlns:tns="http://thalesgroup.com/RTTI/2016-02-16/ldb/types" targetNamespace="http://thalesgroup.com/RTTI/2016-02-16/ldb/types" elementFormDefault="qualified" attributeFormDefault="unqualified" id="RTTI_2016-02-16_ldb_types">
-	<xs:import namespace="http://thalesgroup.com/RTTI/2007-10-10/ldb/commontypes" schemaLocation="rtti_2007-10-10_ldb_common_types.xsd"/>
-	<xs:import namespace="http://thalesgroup.com/RTTI/2016-02-16/ldb/commontypes" schemaLocation="rtti_2016-02-16_ldb_common_types.xsd"/>
-	<xs:import namespace="http://thalesgroup.com/RTTI/2015-11-27/ldb/types" schemaLocation="rtti_2015-11-27_ldb_types.xsd"/>
+	<xs:import namespace="http://thalesgroup.com/RTTI/2007-10-10/ldb/commontypes" schemalocation="https://git.sr.ht/~bradfier/dalton/blob/master/go-attempt/resources/rtti_2007-10-10_ldb_common_types.xsd"/>
+	<xs:import namespace="http://thalesgroup.com/RTTI/2016-02-16/ldb/commontypes" schemalocation="https://git.sr.ht/~bradfier/dalton/blob/master/go-attempt/resources/rtti_2016-02-16_ldb_common_types.xsd"/>
+	<xs:import namespace="http://thalesgroup.com/RTTI/2015-11-27/ldb/types" schemalocation="https://git.sr.ht/~bradfier/dalton/blob/master/go-attempt/resources/rtti_2015-11-27_ldb_types.xsd"/>
 	<!-- Simple types -->
 	<!-- Complex types -->
 	<xs:complexType name="StationBoard">

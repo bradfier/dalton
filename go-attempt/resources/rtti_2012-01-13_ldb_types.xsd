@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema targetNamespace="http://thalesgroup.com/RTTI/2012-01-13/ldb/types" xmlns:tns="http://thalesgroup.com/RTTI/2012-01-13/ldb/types" xmlns:ct="http://thalesgroup.com/RTTI/2007-10-10/ldb/commontypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" id="RTTI_2012-01-13_ldb_types">
-	<xs:import namespace="http://thalesgroup.com/RTTI/2007-10-10/ldb/commontypes" schemaLocation="rtti_2007-10-10_ldb_common_types.xsd"/>
-	
+	<xs:import namespace="http://thalesgroup.com/RTTI/2007-10-10/ldb/commontypes" schemalocation="https://git.sr.ht/~bradfier/dalton/blob/master/go-attempt/resources/rtti_2007-10-10_ldb_common_types.xsd"/>
   
   <!-- Simple types -->
 	<xs:simpleType name="TimeType">
