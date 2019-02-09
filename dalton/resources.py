@@ -74,11 +74,18 @@ class SoapResource(Resource):
 
 
 class CRS(Resource):
-    def get(self):
+    def get(self, query=None):
         codes = [{
             'stationName': crs.CODES[k],
             'crsCode': k
         } for k in crs.CODES]
+
+        if query is not None:
+            query = query.upper()
+            codes = list(
+                filter(
+                    lambda x: query in x['stationName'].upper() \
+                            or query in x['crsCode'], codes))
 
         return codes
 

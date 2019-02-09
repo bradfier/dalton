@@ -6,7 +6,7 @@ from .resources import CRS, Departures, FilteredDepartures, NextDeparture, Arriv
 app = Flask(__name__)
 api = Api(app)
 
-api.add_resource(CRS, '/crs')
+api.add_resource(CRS, '/crs', '/crs/<string:query>')
 
 api.add_resource(Departures, '/departures/<string:station>/<int:num_rows>',
                  '/departures/<string:station>')
