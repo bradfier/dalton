@@ -375,7 +375,7 @@ $ curl -H "..." https://daltonapi.herokuapp.com/departures/KGX/5?full=true | pyt
 ## License
 
 Dalton is licensed under the GNU Affero General Public License, Version 3, see
-[LICENSE](LICENSE) for more information.
+LICENSE for more information.
 
 Included public sector information is licensed under the Open Government
 License v3.0.
