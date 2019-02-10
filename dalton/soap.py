@@ -2,6 +2,7 @@ import zeep
 from zeep import Client
 from zeep import xsd
 from zeep.plugins import HistoryPlugin
+from boltons.iterutils import remap
 
 WSDL = 'http://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01'
 
@@ -22,5 +23,6 @@ def auth_header(token):
     return header(TokenValue=token)
 
 
-def to_dict(soap_obj, **kwargs):
-    return zeep.helpers.serialize_object(soap_obj, **kwargs)
+def to_dict(soap_obj, full=None, **kwargs):
+    data = zeep.helpers.serialize_object(soap_obj, **kwargs)
+    return remap(data, lambda p, k, v: v is not None) if not full else data

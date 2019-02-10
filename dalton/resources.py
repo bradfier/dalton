@@ -8,6 +8,7 @@ from functools import wraps
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', location='headers', required=True)
+parser.add_argument('full')
 
 
 def handle_fault(f):
@@ -99,7 +100,8 @@ class Departures(SoapResource):
                 soap.client.service.GetDepartureBoard(
                     numRows=num_rows,
                     crs=parse_station(station),
-                    _soapheaders=[header])))
+                    _soapheaders=[header]),
+                full=args.get('full')))
 
 
 class FilteredDepartures(SoapResource):
@@ -113,7 +115,8 @@ class FilteredDepartures(SoapResource):
                     crs=parse_station(station),
                     filterCrs=parse_station(filter_station),
                     filterType=parse_direction(filter_direction),
-                    _soapheaders=[header])))
+                    _soapheaders=[header]),
+                full=args.get('full')))
 
 
 class NextDeparture(SoapResource):
@@ -125,7 +128,8 @@ class NextDeparture(SoapResource):
                 soap.client.service.GetNextDepartures(
                     crs=parse_station(station),
                     filterList=parse_station_list(station_list),
-                    _soapheaders=[header])))
+                    _soapheaders=[header]),
+                full=args.get('full')))
 
 
 class Arrivals(SoapResource):
@@ -137,7 +141,8 @@ class Arrivals(SoapResource):
                 soap.client.service.GetArrivalBoard(
                     numRows=num_rows,
                     crs=parse_station(station),
-                    _soapheaders=[header])))
+                    _soapheaders=[header]),
+                full=args.get('full')))
 
 
 class FilteredArrivals(SoapResource):
@@ -151,7 +156,8 @@ class FilteredArrivals(SoapResource):
                     crs=parse_station(station),
                     filterCrs=parse_station(filter_station),
                     filterType=parse_direction(filter_direction),
-                    _soapheaders=[header])))
+                    _soapheaders=[header]),
+                full=args.get('full')))
 
 
 class Fastest(SoapResource):
@@ -163,7 +169,8 @@ class Fastest(SoapResource):
                 soap.client.service.GetFastestDepartures(
                     crs=parse_station(station),
                     filterList=parse_station_list(station_list),
-                    _soapheaders=[header])))
+                    _soapheaders=[header]),
+                full=args.get('full')))
 
 
 class ServiceDetails(SoapResource):
@@ -173,4 +180,5 @@ class ServiceDetails(SoapResource):
         return jsonify(
             soap.to_dict(
                 soap.client.service.GetServiceDetails(
-                    serviceID=service_id, _soapheaders=[header])))
+                    serviceID=service_id, _soapheaders=[header]),
+                full=args.get('full')))
