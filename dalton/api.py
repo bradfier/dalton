@@ -31,7 +31,7 @@ api.add_resource(NextDeparture,
 
 api.add_resource(Fastest, '/fastest/<string:station>/to/<string:station_list>')
 
-api.add_resource(ServiceDetails, '/service/<string:service_id>')
+api.add_resource(ServiceDetails, '/service/<path:service_id>')
 
 if __name__ == '__main__':
     app.run(debug=False)
