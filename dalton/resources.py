@@ -8,7 +8,7 @@ from functools import wraps
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', location='headers', required=True)
-parser.add_argument('full')
+parser.add_argument('full', type=bool)
 
 
 def handle_fault(f):
