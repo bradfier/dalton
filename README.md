@@ -10,6 +10,23 @@ associated with consuming SOAP.
 The most useful parts of Huxley's API are reimplemented, the notable
 exceptions being the staff endpoints and the delay calculations.
 
+## Deployment
+
+Configuration files are included for deployment on a Heroku Dyno, and an
+instance is available for testing at `https://daltonapi.herokuapp.com`
+
+To run Dalton locally, or on your own server, install the dependencies
+with `pip` and start the proxy with Gunicorn:
+
+```sh
+$ pip install -r requirements.txt
+...
+$ gunicorn dalton.api:app
+```
+
+If you run your own proxy, it is recommended that you enable SSL for all
+requests, otherwise your LDBWS Access Token will be sent in the clear.
+
 ## Access Tokens
 
 You will need to obtain an [OpenLDBWS Access Token](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration/)
@@ -354,3 +371,13 @@ $ curl -H "..." https://daltonapi.herokuapp.com/departures/KGX/5?full=true | pyt
   }
 }
 ```
+
+## License
+
+Dalton is licensed under the GNU Affero General Public License, Version 3, see
+[LICENSE](LICENSE) for more information.
+
+Included public sector information is licensed under the Open Government
+License v3.0.
+
+Dalton is powered by the [National Rail Darwin Data Feeds](http://www.nationalrail.co.uk/100296.aspx).
