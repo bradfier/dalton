@@ -2,7 +2,8 @@ from flask import Flask
 from flask_restful import Resource, Api
 from flask_cors import CORS
 
-from .resources import CRS, Departures, FilteredDepartures, NextDeparture, Arrivals, FilteredArrivals, Fastest, ServiceDetails
+from dalton.resources import CRS, Departures, FilteredDepartures, NextDeparture, Arrivals, \
+    FilteredArrivals, Fastest, ServiceDetails
 
 app = Flask(__name__)
 CORS(app)

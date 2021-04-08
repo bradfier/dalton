@@ -1,8 +1,8 @@
 import zeep
+from boltons.iterutils import remap
 from zeep import Client
 from zeep import xsd
 from zeep.plugins import HistoryPlugin
-from boltons.iterutils import remap
 
 WSDL = 'http://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01'
 

@@ -1,10 +1,11 @@
 import re
-from . import crs
-from . import soap
+from functools import wraps
 
 from flask import jsonify
 from flask_restful import reqparse, abort, Resource
-from functools import wraps
+
+from dalton import crs
+from dalton import soap
 
 parser = reqparse.RequestParser()
 parser.add_argument('Authorization', location='headers', required=True)
@@ -86,7 +87,7 @@ class CRS(Resource):
             codes = list(
                 filter(
                     lambda x: query in x['stationName'].upper() \
-                            or query in x['crsCode'], codes))
+                              or query in x['crsCode'], codes))
 
         return codes
 
